@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPUserCustomActionManagerOnline", "SPUserCustomActionManagerOnline\SPUserCustomActionManagerOnline.csproj", "{2CD7450C-1C84-4911-A58F-8F7551D2365B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPCustomActionConsoleTester", "SPCustomActionConsoleTester\SPCustomActionConsoleTester.csproj", "{8182B6E0-5FD8-4D0A-ADAA-79DDE169495F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2CD7450C-1C84-4911-A58F-8F7551D2365B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CD7450C-1C84-4911-A58F-8F7551D2365B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CD7450C-1C84-4911-A58F-8F7551D2365B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CD7450C-1C84-4911-A58F-8F7551D2365B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8182B6E0-5FD8-4D0A-ADAA-79DDE169495F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8182B6E0-5FD8-4D0A-ADAA-79DDE169495F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8182B6E0-5FD8-4D0A-ADAA-79DDE169495F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8182B6E0-5FD8-4D0A-ADAA-79DDE169495F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
