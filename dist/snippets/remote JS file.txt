@@ -1,0 +1,7 @@
+(function(){
+  var head1 = document.getElementsByTagName('head')[0];
+  var script1 = document.createElement('script');
+  script1.type = 'text/javascript';
+  script1.src = 'http://www.banderaapps.com/cdn/helloworld.js';
+  head1.appendChild(script1);
+})();

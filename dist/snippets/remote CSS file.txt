@@ -1,0 +1,8 @@
+(function(){
+  var head1 = document.getElementsByTagName('head')[0];
+  var link1 = document.createElement('link');
+  link1.type = 'text/css';
+  link1.rel = 'stylesheet';
+  link1.href = 'http://www.banderaapps.com/cdn/helloworld.css';
+  head1.appendChild(link1);
+})();

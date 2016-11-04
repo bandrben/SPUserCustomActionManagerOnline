@@ -1,0 +1,7 @@
+(function(){
+  var head1 = document.getElementsByTagName('head')[0];
+  var el1 = document.createElement('style');
+  el1.type = 'text/css';
+  el1.innerHTML = '#ctl00_onetidHeadbnnr2 { width: 100px; font-family: \'myfontname\'; }';
+  head1.appendChild(el1);
+})();

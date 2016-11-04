@@ -22,6 +22,12 @@ namespace SPUserCustomActionManagerOnline
         private bool showFullErrMsgs = GenUtil.SafeToBool(ConfigurationManager.AppSettings["showFullErrMsgs"]);
         private bool ErrorOccurred = false;
         private const int _defaultSeq = 1000;
+        public string scope { get; set; }
+        public string advRegType { get; set; }
+
+        private const string _NoSnippetsFound = "No snippets found";
+        private Dictionary<string, string> lstSnippets = new Dictionary<string, string>();
+
 
 
 
@@ -47,8 +53,10 @@ namespace SPUserCustomActionManagerOnline
 
             lblNoErrorFound.Visible = lblErrorFound.Visible = false;
 
+            ddlScope.SelectedIndex = 0;
+            ddlAdvRegType.SelectedIndex = 0;
 
-            // #testing
+            // configure grid
             var i = 0;
             dataGridView1.Columns[i++].ReadOnly = false; // select
             dataGridView1.Columns[i++].ReadOnly = true; // ID
@@ -58,6 +66,7 @@ namespace SPUserCustomActionManagerOnline
             dataGridView1.Columns[i++].ReadOnly = false; // ScriptSrc
             dataGridView1.Columns[i++].ReadOnly = false; // ScriptBlock
 
+            // #testing
             //int n = dataGridView1.Rows.Add();
             //dataGridView1.Rows[n].Cells[0].Value = false;
             //dataGridView1.Rows[n].Cells[1].Value = "TEST1";
@@ -67,8 +76,65 @@ namespace SPUserCustomActionManagerOnline
             //dataGridView1.Rows[n].Cells[1].Value = "TEST2";
 
             //dataGridView1.Rows.RemoveAt(0);
+
+            LoadSnippets();
         }
 
+
+
+
+
+        /// <summary>
+        /// </summary>
+        private void LoadSnippets()
+        {
+            ddlSnippets.Items.Clear();
+            ddlSnippets.Items.Add(_NoSnippetsFound);
+            ddlSnippets.SelectedIndex = 0;
+
+            var di = new System.IO.DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory.CombineFS("snippets"));
+
+            if (di.Exists)
+            {
+                var files = di.GetFiles("*.txt", System.IO.SearchOption.AllDirectories);
+
+                foreach (var fi in files)
+                {
+                    var fileText = System.IO.File.ReadAllText(fi.FullName, System.Text.Encoding.Default).SafeTrim();
+
+                    lstSnippets.Add(fi.Name.Replace(".txt", ""), fileText);
+                }
+            }
+
+            if (lstSnippets.Count > 0)
+            {
+                ddlSnippets.Items.Clear();
+
+                foreach (string key in lstSnippets.Keys)
+                {
+                    ddlSnippets.Items.Add(key);
+                }
+
+                ddlSnippets.SelectedIndex = 0;
+            }
+        }
+
+        /// <summary>
+        /// </summary>
+        private void lnkOpenSnippet_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (ddlSnippets.SelectedItem == null || ddlSnippets.SelectedItem.IsEqual(_NoSnippetsFound))
+            {
+                return;
+            }
+
+            var selVal = ddlSnippets.SelectedItem.SafeTrim();
+
+            if (lstSnippets.ContainsKey(selVal))
+            {
+                tbScriptBlock.Text = lstSnippets[selVal];
+            }
+        }
 
 
      
@@ -518,6 +584,7 @@ namespace SPUserCustomActionManagerOnline
             InitCoutBuffer();
             tbStatus.Text = "";
             lblNoErrorFound.Visible = lblErrorFound.Visible = ErrorOccurred = false;
+            scope = ddlScope.SelectedItem.ToString();
 
             bgw = new BackgroundWorker();
             bgw.DoWork += new DoWorkEventHandler(bgw_LoadActions);
@@ -548,7 +615,16 @@ namespace SPUserCustomActionManagerOnline
                     ctx.ExecuteQuery();
                     tcout("Site loaded", site.ServerRelativeUrl);
 
-                    var spActions = ctx.Site.UserCustomActions;
+                    UserCustomActionCollection spActions = null;
+
+                    if (scope.IsEqual("Site Collection"))
+                    {
+                        spActions = ctx.Site.UserCustomActions;
+                    }
+                    else
+                    {
+                        spActions = ctx.Web.UserCustomActions;
+                    }
 
                     ctx.Load(spActions);
                     ctx.ExecuteQuery();
@@ -571,13 +647,24 @@ namespace SPUserCustomActionManagerOnline
 
                         lstUserActionObjs.Add(userActionObj);
 
-                        tcout("Found UserCustomAction", userActionObj.id, userActionObj.name, userActionObj.seq);
-                        if (!userActionObj.descr.IsNull())
-                            tcout("Description", userActionObj.descr);
-                        if (!userActionObj.scriptBlock.IsNull())
-                            tcout("ScriptBlock", userActionObj.scriptBlock);
-                        if (!userActionObj.scriptSrc.IsNull())
-                            tcout("ScriptSrc", userActionObj.scriptSrc);
+                        tcout("-----------------------------");
+                        tcout("Found UserCustomAction:");
+                        tcout(" - Id", spAction.Id.ToString());
+                        tcout(" - Name", spAction.Name);
+                        tcout(" - Title", spAction.Title);
+                        tcout(" - CommandUIExtension", spAction.CommandUIExtension);
+                        tcout(" - Description", spAction.Description);
+                        tcout(" - Group", spAction.Group);
+                        tcout(" - ImageUrl", spAction.ImageUrl);
+                        tcout(" - Location", spAction.Location);
+                        tcout(" - RegistrationId", spAction.RegistrationId);
+                        tcout(" - RegistrationType", spAction.RegistrationType.ToString());
+                        tcout(" - Scope", spAction.Scope.ToString());
+                        tcout(" - ScriptBlock", spAction.ScriptBlock);
+                        tcout(" - ScriptSrc", spAction.ScriptSrc);
+                        tcout(" - Sequence", spAction.Sequence);
+                        tcout(" - Url", spAction.Url);
+
                     }
                 }
             }
@@ -615,6 +702,7 @@ namespace SPUserCustomActionManagerOnline
             InitCoutBuffer();
             tbStatus.Text = "";
             lblNoErrorFound.Visible = lblErrorFound.Visible = ErrorOccurred = false;
+            scope = ddlScope.SelectedItem.ToString();
 
             bgw = new BackgroundWorker();
             bgw.DoWork += new DoWorkEventHandler(bgw_DelSel);
@@ -661,7 +749,17 @@ namespace SPUserCustomActionManagerOnline
                     ctx.ExecuteQuery();
                     tcout("Site loaded", site.ServerRelativeUrl);
 
-                    var spActions = ctx.Site.UserCustomActions;
+                    UserCustomActionCollection spActions = null;
+
+                    if (scope.IsEqual("Site Collection"))
+                    {
+                        spActions = ctx.Site.UserCustomActions;
+                    }
+                    else
+                    {
+                        spActions = ctx.Web.UserCustomActions;
+                    }
+
                     ctx.Load(spActions);
                     ctx.ExecuteQuery();
 
@@ -735,6 +833,7 @@ namespace SPUserCustomActionManagerOnline
             InitCoutBuffer();
             tbStatus.Text = "";
             lblNoErrorFound.Visible = lblErrorFound.Visible = ErrorOccurred = false;
+            scope = ddlScope.SelectedItem.ToString();
 
             bgw = new BackgroundWorker();
             bgw.DoWork += new DoWorkEventHandler(bgw_AddAction);
@@ -761,7 +860,9 @@ namespace SPUserCustomActionManagerOnline
                     FixCtxForMixedMode(ctx);
 
                     Site site = ctx.Site;
+                    Web web = ctx.Web;
                     ctx.Load(site, x => x.ServerRelativeUrl);
+                    ctx.Load(web, x => x.ServerRelativeUrl);
                     ctx.ExecuteQuery();
                     tcout("Site loaded", site.ServerRelativeUrl);
 
@@ -774,7 +875,7 @@ namespace SPUserCustomActionManagerOnline
                     userActionObj.scriptSrc = tbScriptSrc.Text.Trim();
                     userActionObj.scriptBlock = tbScriptBlock.Text.Trim();
 
-                    AddScript(ctx, site, ref userActionObj);
+                    AddScript(ctx, site, web, ref userActionObj);
                 }
             }
             catch (Exception ex)
@@ -788,42 +889,50 @@ namespace SPUserCustomActionManagerOnline
 
         /// <summary>
         /// </summary>
-        private void AddScript(ClientContext ctx, Site site, ref UserActionObject userActionObj)
+        private void AddScript(ClientContext ctx, Site site, Web web, ref UserActionObject ucaObj)
         {
-            UserCustomAction spUserCustomAction = site.UserCustomActions.Add();
+            UserCustomAction uca = null;
 
-            spUserCustomAction.Location = "ScriptLink";
-
-            if (!userActionObj.scriptSrc.IsNull())
+            if (scope.IsEqual("Site Collection"))
             {
-                spUserCustomAction.ScriptSrc = userActionObj.scriptSrc;
+                uca = site.UserCustomActions.Add();
+            }
+            else
+            {
+                uca = web.UserCustomActions.Add();
+            }
+
+            uca.Location = "ScriptLink";
+
+            if (!ucaObj.scriptSrc.IsNull())
+            {
+                uca.ScriptSrc = ucaObj.scriptSrc;
             }
             
-            if (!userActionObj.scriptBlock.IsNull())
+            if (!ucaObj.scriptBlock.IsNull())
             {
-                spUserCustomAction.ScriptBlock = userActionObj.scriptBlock;
+                uca.ScriptBlock = ucaObj.scriptBlock;
             }
 
-            if (!userActionObj.descr.IsNull())
+            if (!ucaObj.descr.IsNull())
             {
-                spUserCustomAction.Description = userActionObj.descr;
+                uca.Description = ucaObj.descr;
             }
 
-            if (!userActionObj.name.IsNull())
+            if (!ucaObj.name.IsNull())
             {
-                spUserCustomAction.Name = userActionObj.name;
+                uca.Title = uca.Name = ucaObj.name;
             }
 
-            spUserCustomAction.Sequence = userActionObj.seq;
+            uca.Sequence = ucaObj.seq;
 
-            spUserCustomAction.Update();
-
-            ctx.Load(spUserCustomAction, x => x.Id, x => x.Name);
+            uca.Update();
+            ctx.Load(uca, x => x.Id, x => x.Name);
             ctx.ExecuteQuery();
 
-            userActionObj.id = spUserCustomAction.Id.ToString();
+            ucaObj.id = uca.Id.ToString();
 
-            tcout("Action added", userActionObj.id);
+            tcout("Action added", ucaObj.id);
         }
 
         /// <summary>
@@ -834,17 +943,208 @@ namespace SPUserCustomActionManagerOnline
             lblErrorFound.Visible = ErrorOccurred; lblNoErrorFound.Visible = !ErrorOccurred;
             EnableFormControls();
 
-            var lstResults = e.Result as List<object>;
-            var userActionObj = lstResults[0] as UserActionObject;
+            if (!ErrorOccurred)
+            {
+                var lstResults = e.Result as List<object>;
+                var userActionObj = lstResults[0] as UserActionObject;
 
-            UpdateGrid(userActionObj);
+                UpdateGrid(userActionObj);
 
-            tbActionName.Text = "";
-            tbActionDescr.Text = "";
-            tbScriptSeq.Text = "";
-            tbScriptSrc.Text = "";
-            tbScriptBlock.Text = "";
+                tbActionName.Text = "";
+                tbActionDescr.Text = "";
+                tbScriptSeq.Text = "";
+                tbScriptSrc.Text = "";
+                tbScriptBlock.Text = "";
+            }
         }
+
+
+
+
+
+
+
+
+
+        /// <summary>
+        /// </summary>
+        private void btnAdvAddAction_Click(object sender, EventArgs e)
+        {
+            DisableFormControls();
+            InitCoutBuffer();
+            tbStatus.Text = "";
+            lblNoErrorFound.Visible = lblErrorFound.Visible = ErrorOccurred = false;
+            scope = ddlScope.SelectedItem.ToString();
+            advRegType = ddlAdvRegType.SelectedItem.ToString();
+
+            bgw = new BackgroundWorker();
+            bgw.DoWork += new DoWorkEventHandler(bgw_AddActionAdv);
+            bgw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bgw_AddActionAdv_End);
+            bgw.ProgressChanged += new ProgressChangedEventHandler(BgwReportProgress);
+            bgw.WorkerReportsProgress = true;
+            bgw.WorkerSupportsCancellation = true;
+            bgw.RunWorkerAsync();
+        }
+
+        /// <summary>
+        /// </summary>
+        private void bgw_AddActionAdv(object sender, DoWorkEventArgs e)
+        {
+            UserActionObjectAdv userActionObjAdv = null;
+
+            try
+            {
+                var targetSite = new Uri(tbSiteUrl.Text.Trim());
+
+                using (ClientContext ctx = new ClientContext(targetSite))
+                {
+                    ctx.Credentials = BuildCreds();
+                    FixCtxForMixedMode(ctx);
+
+                    Site site = ctx.Site;
+                    Web web = ctx.Web;
+                    ctx.Load(site, x => x.ServerRelativeUrl);
+                    ctx.ExecuteQuery();
+                    tcout("Site loaded", site.ServerRelativeUrl);
+
+                    userActionObjAdv = new UserActionObjectAdv();
+
+                    userActionObjAdv.name = tbAdvName.Text.Trim();
+                    userActionObjAdv.descr = tbAdvDescr.Text.Trim();
+                    userActionObjAdv.seq = GenUtil.SafeToInt(tbAdvSeq.Text.Trim());
+                    if (userActionObjAdv.seq <= 0) userActionObjAdv.seq = _defaultSeq;
+                    userActionObjAdv.scriptSrc = tbAdvScriptSrc.Text.Trim();
+                    userActionObjAdv.scriptBlock = tbAdvScriptBlock.Text.Trim();
+
+                    userActionObjAdv.commandUIExtension = tbAdvCmdUIExt.Text.Trim();
+                    userActionObjAdv.group = tbAdvGroup.Text.Trim();
+                    userActionObjAdv.imageUrl = tbAdvImageURL.Text.Trim();
+                    userActionObjAdv.location = tbAdvLocation.Text.Trim();
+                    userActionObjAdv.registrationId = tbAdvRegID.Text.Trim();
+                    userActionObjAdv.registrationType = advRegType;
+
+                    AddScriptAdv(ctx, site, web, ref userActionObjAdv);
+                }
+            }
+            catch (Exception ex)
+            {
+                tcout(" *** ERROR", GetExcMsg(ex));
+                ErrorOccurred = true;
+            }
+
+            e.Result = new List<object>() { userActionObjAdv };
+        }
+
+        /// <summary>
+        /// </summary>
+        private void AddScriptAdv(ClientContext ctx, Site site, Web web, ref UserActionObjectAdv ucaObj)
+        {
+            UserCustomAction uca = null;
+
+            if (scope.IsEqual("Site Collection"))
+            {
+                uca = site.UserCustomActions.Add();
+            }
+            else
+            {
+                uca = web.UserCustomActions.Add();
+            }
+
+            if (!ucaObj.commandUIExtension.IsNull())
+                uca.CommandUIExtension = ucaObj.commandUIExtension;
+
+            if (!ucaObj.descr.IsNull())
+                uca.Description = ucaObj.descr;
+
+            if (!ucaObj.group.IsNull())
+                uca.Group = ucaObj.group;
+
+            if (!ucaObj.imageUrl.IsNull())
+                uca.ImageUrl = ucaObj.imageUrl;
+
+            if (!ucaObj.location.IsNull())
+                uca.Location = ucaObj.location;
+
+            if (!ucaObj.name.IsNull())
+                uca.Name = uca.Title = ucaObj.name;
+
+            if (!ucaObj.registrationId.IsNull())
+                uca.RegistrationId = ucaObj.registrationId;
+
+            if (!ucaObj.scriptBlock.IsNull())
+                uca.ScriptBlock = ucaObj.scriptBlock;
+
+            if (!ucaObj.scriptSrc.IsNull())
+                uca.ScriptSrc = ucaObj.scriptSrc;
+
+            uca.Sequence = ucaObj.seq;
+
+            if (!ucaObj.Url.IsNull())
+                uca.Url = ucaObj.Url;
+
+            if (ucaObj.registrationType.IsEqual("ContentType"))
+            {
+                uca.RegistrationType = UserCustomActionRegistrationType.ContentType;
+            }
+            else if (ucaObj.registrationType.IsEqual("FileType"))
+            {
+                uca.RegistrationType = UserCustomActionRegistrationType.FileType;
+            }
+            else if (ucaObj.registrationType.IsEqual("List"))
+            {
+                uca.RegistrationType = UserCustomActionRegistrationType.List;
+            }
+            else if (ucaObj.registrationType.IsEqual("None"))
+            {
+                uca.RegistrationType = UserCustomActionRegistrationType.None;
+            }
+            else if (ucaObj.registrationType.IsEqual("ProgId"))
+            {
+                uca.RegistrationType = UserCustomActionRegistrationType.ProgId;
+            }
+
+            uca.Update();
+            ctx.Load(uca, x => x.Id, x => x.Name);
+            ctx.ExecuteQuery();
+
+            ucaObj.id = uca.Id.ToString();
+
+            tcout("Action added", ucaObj.id);
+        }
+
+        /// <summary>
+        /// </summary>
+        private void bgw_AddActionAdv_End(object sender, RunWorkerCompletedEventArgs e)
+        {
+            FlushCoutBuffer();
+            lblErrorFound.Visible = ErrorOccurred; lblNoErrorFound.Visible = !ErrorOccurred;
+            EnableFormControls();
+
+            if (!ErrorOccurred)
+            {
+                //var lstResults = e.Result as List<object>;
+                //var userActionObj = lstResults[0] as UserActionObject;
+
+                //UpdateGrid(userActionObj);
+
+                tbAdvName.Text = "";
+                tbAdvDescr.Text = "";
+                tbAdvSeq.Text = "";
+                tbAdvScriptSrc.Text = "";
+                tbAdvScriptBlock.Text = "";
+
+                tbAdvCmdUIExt.Text = "";
+                tbAdvGroup.Text = "";
+                tbAdvImageURL.Text = "";
+                tbAdvLocation.Text = "";
+                tbAdvRegID.Text = "";
+                ddlAdvRegType.SelectedIndex = 0;
+                tbAdvURL.Text = "";
+            }
+        }
+
+
+
 
 
 
@@ -858,6 +1158,7 @@ namespace SPUserCustomActionManagerOnline
             InitCoutBuffer();
             tbStatus.Text = "";
             lblNoErrorFound.Visible = lblErrorFound.Visible = ErrorOccurred = false;
+            scope = ddlScope.SelectedItem.ToString();
 
             bgw = new BackgroundWorker();
             bgw.DoWork += new DoWorkEventHandler(bgw_SaveSelChanges);
@@ -903,7 +1204,17 @@ namespace SPUserCustomActionManagerOnline
                     ctx.ExecuteQuery();
                     tcout("Site loaded", site.ServerRelativeUrl);
 
-                    var spActions = ctx.Site.UserCustomActions;
+                    UserCustomActionCollection spActions = null;
+
+                    if (scope.IsEqual("Site Collection"))
+                    {
+                        spActions = ctx.Site.UserCustomActions;
+                    }
+                    else
+                    {
+                        spActions = ctx.Web.UserCustomActions;
+                    }
+
                     ctx.Load(spActions);
                     ctx.ExecuteQuery();
 
@@ -1049,6 +1360,29 @@ namespace SPUserCustomActionManagerOnline
         {
             toolStripStatusLabel1.Text = "";
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

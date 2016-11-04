@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.SharePoint.Client;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,17 @@ namespace BandR
         public string scriptBlock { get; set; }
 
         public bool selected { get; set; }
+    }
+
+    public class UserActionObjectAdv : UserActionObject
+    {
+        public string commandUIExtension { get; set; }
+        public string group { get; set; }
+        public string imageUrl { get; set; }
+        public string location { get; set; }
+        public string registrationId { get; set; }
+        public string registrationType { get; set; }
+        public string Url { get; set; }
     }
 
 }
