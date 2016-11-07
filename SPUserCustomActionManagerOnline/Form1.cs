@@ -576,6 +576,114 @@ namespace SPUserCustomActionManagerOnline
 
 
 
+
+
+        /// <summary>
+        /// </summary>
+        private void btnCheckUserScriptsEnabled_Click(object sender, EventArgs e)
+        {
+            DisableFormControls();
+            InitCoutBuffer();
+            tbStatus.Text = "";
+            lblNoErrorFound.Visible = lblErrorFound.Visible = ErrorOccurred = false;
+            scope = ddlScope.SelectedItem.ToString();
+
+            bgw = new BackgroundWorker();
+            bgw.DoWork += new DoWorkEventHandler(bgw_CheckUserScriptsEnabled);
+            bgw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bgw_CheckUserScriptsEnabled_End);
+            bgw.ProgressChanged += new ProgressChangedEventHandler(BgwReportProgress);
+            bgw.WorkerReportsProgress = true;
+            bgw.WorkerSupportsCancellation = true;
+            bgw.RunWorkerAsync();    
+        }
+
+        /// <summary>
+        /// </summary>
+        private void bgw_CheckUserScriptsEnabled(object sender, DoWorkEventArgs e)
+        {
+            var success = true;
+
+            try
+            {
+                var targetSite = new Uri(tbSiteUrl.Text.Trim());
+
+                using (ClientContext ctx = new ClientContext(targetSite))
+                {
+                    ctx.Credentials = BuildCreds();
+                    FixCtxForMixedMode(ctx);
+
+                    Web web = null;
+
+                    if (scope.IsEqual("Site Collection"))
+                    {
+                        web = ctx.Site.RootWeb;
+                    }
+                    else
+                    {
+                        web = ctx.Web;
+                    }
+
+                    ctx.Load(web, x => x.ServerRelativeUrl, x => x.EffectiveBasePermissions);
+                    ctx.ExecuteQuery();
+
+                    var permissions = web.EffectiveBasePermissions;
+
+                    tcout("Web found", web.ServerRelativeUrl);
+                    tcout("Retrieving Web Effective Base Permisions...");
+
+                    foreach (var permission in Enum.GetValues(typeof(PermissionKind)).Cast<PermissionKind>())
+                    {
+                        var permissionName = Enum.GetName(typeof(PermissionKind), permission);
+                        var hasPermission = permissions.Has(permission);
+
+                        tcout(string.Format("Permission: {0}, HasPermission: {1}", permissionName, hasPermission));
+
+                        if (permissionName.IsEqual("AddAndCustomizePages"))
+                        {
+                            if (!hasPermission)
+                            {
+                                tcout(string.Format(" *** WARNING: Permission set to false, User Custom Actions not supported in this site!"));
+                                success = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                tcout(" *** ERROR", GetExcMsg(ex));
+                ErrorOccurred = true;
+            }
+
+            e.Result = new List<object>() { success };
+        }
+
+        /// <summary>
+        /// </summary>
+        private void bgw_CheckUserScriptsEnabled_End(object sender, RunWorkerCompletedEventArgs e)
+        {
+            FlushCoutBuffer();
+            lblErrorFound.Visible = ErrorOccurred; lblNoErrorFound.Visible = !ErrorOccurred;
+            EnableFormControls();
+
+            var lstResults = e.Result as List<object>;
+            var result = Convert.ToBoolean(lstResults[0]);
+
+            if (!result)
+            {
+                MessageBox.Show("User Custom Actions are NOT supported in this site!", "WARNING");
+            }
+            else
+            {
+                MessageBox.Show("User Custom Actions are supported in this site.", "Success");
+            }
+        }
+
+
+
+
+
         /// <summary>
         /// </summary>
         private void btnLoadActions_Click(object sender, EventArgs e)
@@ -1361,29 +1469,7 @@ namespace SPUserCustomActionManagerOnline
             toolStripStatusLabel1.Text = "";
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      
 
 
 

@@ -40,6 +40,9 @@
             this.lblUsername = new System.Windows.Forms.Label();
             this.tbUsername = new System.Windows.Forms.TextBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.lnkOpenSnippet = new System.Windows.Forms.LinkLabel();
+            this.ddlSnippets = new System.Windows.Forms.ComboBox();
+            this.label21 = new System.Windows.Forms.Label();
             this.btnAddAction = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.tbScriptSrc = new System.Windows.Forms.TextBox();
@@ -63,6 +66,7 @@
             this.colScriptSrc = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colScriptBlock = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.btnCheckUserScriptsEnabled = new System.Windows.Forms.Button();
             this.ddlAdvRegType = new System.Windows.Forms.ComboBox();
             this.label18 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
@@ -106,9 +110,6 @@
             this.lblNoErrorFound = new System.Windows.Forms.Label();
             this.ddlScope = new System.Windows.Forms.ComboBox();
             this.label19 = new System.Windows.Forms.Label();
-            this.label21 = new System.Windows.Forms.Label();
-            this.ddlSnippets = new System.Windows.Forms.ComboBox();
-            this.lnkOpenSnippet = new System.Windows.Forms.LinkLabel();
             this.tb1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -156,12 +157,13 @@
             // 
             // btnTestConnection
             // 
+            this.btnTestConnection.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
             this.btnTestConnection.Location = new System.Drawing.Point(67, 111);
             this.btnTestConnection.Name = "btnTestConnection";
             this.btnTestConnection.Size = new System.Drawing.Size(120, 23);
             this.btnTestConnection.TabIndex = 14;
             this.btnTestConnection.Text = "Test Connection";
-            this.btnTestConnection.UseVisualStyleBackColor = true;
+            this.btnTestConnection.UseVisualStyleBackColor = false;
             this.btnTestConnection.Click += new System.EventHandler(this.btnTestConnection_Click);
             // 
             // cbIsSPOnline
@@ -252,6 +254,35 @@
             this.tabPage1.TabIndex = 500;
             this.tabPage1.Text = "Actions";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // lnkOpenSnippet
+            // 
+            this.lnkOpenSnippet.AutoSize = true;
+            this.lnkOpenSnippet.Location = new System.Drawing.Point(739, 138);
+            this.lnkOpenSnippet.Name = "lnkOpenSnippet";
+            this.lnkOpenSnippet.Size = new System.Drawing.Size(31, 13);
+            this.lnkOpenSnippet.TabIndex = 703;
+            this.lnkOpenSnippet.TabStop = true;
+            this.lnkOpenSnippet.Text = "Load";
+            this.lnkOpenSnippet.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkOpenSnippet_LinkClicked);
+            // 
+            // ddlSnippets
+            // 
+            this.ddlSnippets.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ddlSnippets.FormattingEnabled = true;
+            this.ddlSnippets.Location = new System.Drawing.Point(482, 135);
+            this.ddlSnippets.Name = "ddlSnippets";
+            this.ddlSnippets.Size = new System.Drawing.Size(251, 21);
+            this.ddlSnippets.TabIndex = 702;
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(401, 138);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(75, 13);
+            this.label21.TabIndex = 503;
+            this.label21.Text = "Insert Snippet:";
             // 
             // btnAddAction
             // 
@@ -468,6 +499,7 @@
             // tabPage3
             // 
             this.tabPage3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tabPage3.Controls.Add(this.btnCheckUserScriptsEnabled);
             this.tabPage3.Controls.Add(this.ddlAdvRegType);
             this.tabPage3.Controls.Add(this.label18);
             this.tabPage3.Controls.Add(this.label17);
@@ -500,6 +532,17 @@
             this.tabPage3.TabIndex = 501;
             this.tabPage3.Text = "Advanced";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // btnCheckUserScriptsEnabled
+            // 
+            this.btnCheckUserScriptsEnabled.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.btnCheckUserScriptsEnabled.Location = new System.Drawing.Point(71, 269);
+            this.btnCheckUserScriptsEnabled.Name = "btnCheckUserScriptsEnabled";
+            this.btnCheckUserScriptsEnabled.Size = new System.Drawing.Size(165, 23);
+            this.btnCheckUserScriptsEnabled.TabIndex = 705;
+            this.btnCheckUserScriptsEnabled.Text = "Check User Scripts Enabled";
+            this.btnCheckUserScriptsEnabled.UseVisualStyleBackColor = false;
+            this.btnCheckUserScriptsEnabled.Click += new System.EventHandler(this.btnCheckUserScriptsEnabled_Click);
             // 
             // ddlAdvRegType
             // 
@@ -917,35 +960,6 @@
             this.label19.TabIndex = 502;
             this.label19.Text = "Scope:";
             // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(401, 138);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(75, 13);
-            this.label21.TabIndex = 503;
-            this.label21.Text = "Insert Snippet:";
-            // 
-            // ddlSnippets
-            // 
-            this.ddlSnippets.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.ddlSnippets.FormattingEnabled = true;
-            this.ddlSnippets.Location = new System.Drawing.Point(482, 135);
-            this.ddlSnippets.Name = "ddlSnippets";
-            this.ddlSnippets.Size = new System.Drawing.Size(251, 21);
-            this.ddlSnippets.TabIndex = 702;
-            // 
-            // lnkOpenSnippet
-            // 
-            this.lnkOpenSnippet.AutoSize = true;
-            this.lnkOpenSnippet.Location = new System.Drawing.Point(739, 138);
-            this.lnkOpenSnippet.Name = "lnkOpenSnippet";
-            this.lnkOpenSnippet.Size = new System.Drawing.Size(31, 13);
-            this.lnkOpenSnippet.TabIndex = 703;
-            this.lnkOpenSnippet.TabStop = true;
-            this.lnkOpenSnippet.Text = "Load";
-            this.lnkOpenSnippet.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkOpenSnippet_LinkClicked);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1070,6 +1084,7 @@
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.LinkLabel lnkOpenSnippet;
         private System.Windows.Forms.ComboBox ddlSnippets;
+        private System.Windows.Forms.Button btnCheckUserScriptsEnabled;
     }
 }
 
