@@ -11,7 +11,6 @@ namespace BandR
     {
         public string siteUrl { get; set; }
         public string userName { get; set; }
-        public string passWord { get; set; }
         public string domain { get; set; }
         public string isSPOnline { get; set; }
     }
