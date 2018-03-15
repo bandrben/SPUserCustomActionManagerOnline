@@ -137,7 +137,7 @@ namespace SPUserCustomActionManagerOnline
         }
 
 
-     
+
 
         /// <summary>
         /// </summary>
@@ -191,7 +191,6 @@ namespace SPUserCustomActionManagerOnline
 
                 tbSiteUrl.Text = obj.siteUrl;
                 tbUsername.Text = obj.userName;
-                tbPassword.Text = obj.passWord;
                 tbDomain.Text = obj.domain;
                 cbIsSPOnline.Checked = GenUtil.SafeToBool(obj.isSPOnline);
             }
@@ -207,7 +206,6 @@ namespace SPUserCustomActionManagerOnline
             {
                 siteUrl = tbSiteUrl.Text.Trim(),
                 userName = tbUsername.Text.Trim(),
-                passWord = tbPassword.Text.Trim(),
                 domain = tbDomain.Text.Trim(),
                 isSPOnline = cbIsSPOnline.Checked ? "1" : "0",
             };
@@ -594,7 +592,7 @@ namespace SPUserCustomActionManagerOnline
             bgw.ProgressChanged += new ProgressChangedEventHandler(BgwReportProgress);
             bgw.WorkerReportsProgress = true;
             bgw.WorkerSupportsCancellation = true;
-            bgw.RunWorkerAsync();    
+            bgw.RunWorkerAsync();
         }
 
         /// <summary>
@@ -700,7 +698,7 @@ namespace SPUserCustomActionManagerOnline
             bgw.ProgressChanged += new ProgressChangedEventHandler(BgwReportProgress);
             bgw.WorkerReportsProgress = true;
             bgw.WorkerSupportsCancellation = true;
-            bgw.RunWorkerAsync();           
+            bgw.RunWorkerAsync();
         }
 
         /// <summary>
@@ -818,7 +816,7 @@ namespace SPUserCustomActionManagerOnline
             bgw.ProgressChanged += new ProgressChangedEventHandler(BgwReportProgress);
             bgw.WorkerReportsProgress = true;
             bgw.WorkerSupportsCancellation = true;
-            bgw.RunWorkerAsync();           
+            bgw.RunWorkerAsync();
         }
 
         /// <summary>
@@ -889,7 +887,7 @@ namespace SPUserCustomActionManagerOnline
                     {
                         ctx.ExecuteQuery();
                         tcout("Action(s) deleted.");
-                    }                  
+                    }
                 }
             }
             catch (Exception ex)
@@ -1016,7 +1014,7 @@ namespace SPUserCustomActionManagerOnline
             {
                 uca.ScriptSrc = ucaObj.scriptSrc;
             }
-            
+
             if (!ucaObj.scriptBlock.IsNull())
             {
                 uca.ScriptBlock = ucaObj.scriptBlock;
@@ -1274,7 +1272,7 @@ namespace SPUserCustomActionManagerOnline
             bgw.ProgressChanged += new ProgressChangedEventHandler(BgwReportProgress);
             bgw.WorkerReportsProgress = true;
             bgw.WorkerSupportsCancellation = true;
-            bgw.RunWorkerAsync();           
+            bgw.RunWorkerAsync();
 
         }
 
@@ -1469,7 +1467,7 @@ namespace SPUserCustomActionManagerOnline
             toolStripStatusLabel1.Text = "";
         }
 
-      
+
 
 
 
